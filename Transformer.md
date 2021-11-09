@@ -13,14 +13,25 @@
 
 ## 自注意力机制 Self-attention
 
-自注意力机制是一种能够通过关联一个序列当中不同位置的点而形成这个序列的表征的注意力机制。  
+自注意力机制是一种能够通过关联一个序列当中不同位置的点而形成这个序列的表征的注意力机制。自注意力机制的`query``key``value`均来自同一个输入序列。  
 
-使用compatibility function来计算给定query与每个key的相似度，以相似度作为权重来加权求和所有value。
+使用`compatibility function`来计算给定`query`与每个`key`的相似度，以相似度作为权重来加权求和所有`value`。这里使用的`compatibility function`是`Scaled Dot-Product`，对应的attention的计算方法如下：  
+![1636424345(1)](https://user-images.githubusercontent.com/40049927/140849722-14dddd63-b5dd-4ec3-96b3-b3386f246605.png)  
+这里采用了d<sub>k</sub>来`Scaled`的原因是：当d<sub>k</sub>很大时，点积的结果会非常大，这样会使得softmax函数的梯度变得非常小。所以考虑到梯度问题，我们需要去控制点积结果的范围。  
 
 ### 多头注意力机制
 
+原文采用八个更小的不同的并行计算的注意力层来代替一个单独的大的注意力层。这样，不同的注意力层类似于不同的卷积通道，他们关注了不同的特征。最后再集成这8个注意力层的结果来综合最后的注意力输出。
 
+### 多头注意力机制的三种使用方法
+1. Encoder-Attention-Decoder的结果
+2. Encoder中的self-attention
+3. Decoder中的masked self-attention
 
+### 为什么使用自注意力机制？
+1. 每层网络的计算复杂度大大降低，相比于RNN和CNN
+2. 整个网络可以高度并行化
+3. 注意力机制能够关注到一些跨越整个序列的特征
 
 ## Layer Normalization vs. Batch Normalization
 
@@ -29,3 +40,5 @@ Layer Norm: 计算一个样本的feature求均值和方差。
 
 ### 为什么Layer Norm使用的更多？  
 一般来说，现在样本点数据很多情况下都是一个序列，序列的每个点都有特征向量，样本与样本之间的序列长度不尽相同。在这种情况下，batch norm均值和方差的抖动会非常大，尤其是在计算全局的均值和方差，可能会跟一个批的均值方差差距很大。Layer Norm则不会出现这种情况。
+
+## positional encoding
