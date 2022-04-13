@@ -17,7 +17,9 @@ cd model_repo/speaker_model/
 # Similarly, we set 200 as the minimum length of model just because all our samples length are
 # larger than 2 seconds.
 # You may ask your algorithm engineer to confirm these numbers for your customized models.
-trtexec --saveEngine=b1_b128_s3000_fp16.trt  --onnx=resnet/resnet_avg_model.onnx --minShapes=feats:1x200x80 --optShapes=feats:64x200x80 --maxShapes=feats:128x3000x80 --fp16
+trtexec --saveEngine=b1_b128_s3000_fp16.trt  --onnx=resnet/resnet_avg_model.onnx --minShapes=feats:1x200x80 --optShapes=feats:64x200x80 --maxShapes=feats:128x3000x80 --fp16 
+
+trtexec --saveEngine=genderclass_fp32.trt  --onnx=resnet/resnet_avg_model.onnx --minShapes=feats:1x50x26 --optShapes=feats:1x200x80 --maxShapes=feats:1x1000x26 --fp32
 
 # Convert your int8 model by trtexec
 # There is also one example onnx model with quantizers we inserted manually and did the PTQ.
@@ -30,7 +32,7 @@ trtexec --saveEngine=b1_b128_s3000_int8.trt  --onnx=resnet/resnet_avg_model_cali
 # Step3. Start server
  ```
  docker run --gpus '"device=0"' -v $PWD/model_repo:/ws/model_repo -v $MODEL_DIR:/ws/models --shm-size=1g --ulimit memlock=-1 -p 8000:8000 -p 8001:8001 -p 8002:8002 --ulimit stack=67108864 -ti  wespeaker:latest
- tritonserver --model-repository=/ws/model_repo
+ tritonserver --model-repository=/mnt/cfs1/asr/users/zengsunlu/gc_dev
  ```
  
 # Step4. Start client
